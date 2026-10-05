@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+ <base target="_top">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Wiskunde Challenge: Negatieve Getallen</title>
+ <style>
+   * {
+     box-sizing: border-box;
+     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+   }
+   body {
+     background-color: #f0f4f8;
+     margin: 0;
+     padding: 16px;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     min-height: 100vh;
+   }
+   .game-card {
+     background: white;
+     border-radius: 16px;
+     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+     width: 100%;
+     max-width: 500px;
+     padding: 24px;
+     text-align: center;
+   }
+   .screen {
+     display: none;
+   }
+   .screen.active {
+     display: block;
+   }
+   h1 {
+     color: #1e3a8a;
+     font-size: 24px;
+     margin-top: 0;
+   }
+   p {
+     color: #64748b;
+     font-size: 14px;
+   }
+   .btn-group {
+     display: flex;
+     flex-direction: column;
+     gap: 12px;
+     margin-top: 20px;
+   }
+   button {
+     background-color: #2563eb;
+     color: white;
+     border: none;
+     padding: 14px 20px;
+     font-size: 16px;
+     font-weight: bold;
+     border-radius: 10px;
+     cursor: pointer;
+     transition: all 0.2s;
+     width: 100%;
+   }
+   button:hover {
+     background-color: #1d4ed8;
+     transform: translateY(-1px);
+   }
+   button.secondary {
+     background-color: #e2e8f0;
+     color: #334155;
+   }
+   button.secondary:hover {
+     background-color: #cbd5e1;
+   }
+   button.danger {
+     background-color: #dc2626;
+     color: white;
+   }
+   button.danger:hover {
+     background-color: #b91c1c;
+   }
+   input, select {
+     width: 100%;
+     padding: 12px;
+     font-size: 16px;
+     border: 2px solid #cbd5e1;
+     border-radius: 8px;
+     margin-bottom: 12px;
+     outline: none;
+     box-sizing: border-box;
+   }
+   input:focus, select:focus {
+     border-color: #2563eb;
+   }
+   .pin-display {
+     font-size: 36px;
+     font-weight: bold;
+     letter-spacing: 4px;
+     color: #2563eb;
+     background: #eff6ff;
+     padding: 15px;
+     border-radius: 12px;
+     border: 2px dashed #3b82f6;
+     margin: 15px 0;
+   }
+   .player-list {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 8px;
+     justify-content: center;
+     margin: 15px 0;
+     max-height: 150px;
+     overflow-y: auto;
+   }
+   .player-tag {
+     background: #e0e7ff;
+     color: #3730a3;
+     padding: 6px 12px;
+     border-radius: 20px;
+     font-weight: bold;
+     font-size: 14px;
+   }
+   .header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 16px;
+     padding-bottom: 12px;
+     border-bottom: 2px solid #e2e8f0;
+   }
+   .badge {
+     background-color: #2563eb;
+     color: white;
+     padding: 6px 12px;
+     border-radius: 20px;
+     font-size: 14px;
+     font-weight: bold;
+   }
+   .stats {
+     display: flex;
+     justify-content: space-around;
+     background: #f8fafc;
+     padding: 10px;
+     border-radius: 8px;
+     margin-bottom: 20px;
+     font-weight: bold;
+     color: #334155;
+   }
+   .question-box {
+     background: #eff6ff;
+     border: 2px solid #bfdbfe;
+     border-radius: 12px;
+     padding: 20px;
+     margin-bottom: 20px;
+   }
+   .question-text {
+     font-size: 28px;
+     font-weight: bold;
+     color: #1e3a8a;
+     margin: 0 0 8px 0;
+   }
+   .level-desc {
+     font-size: 13px;
+     color: #64748b;
+   }
+   .feedback {
+     min-height: 50px;
+     padding: 10px;
+     border-radius: 8px;
+     font-size: 14px;
+     font-weight: normal;
+     display: none;
+     margin-bottom: 15px;
+     text-align: left;
+   }
+   .feedback.correct {
+     background-color: #dcfce7;
+     color: #166534;
+     display: block;
+   }
+   .feedback.wrong {
+     background-color: #fee2e2;
+     color: #991b1b;
+     display: block;
+   }
+   .progress-bar-container {
+     background-color: #e2e8f0;
+     border-radius: 10px;
+     height: 10px;
+     width: 100%;
+     margin-top: 15px;
+     overflow: hidden;
+   }
+   .progress-bar {
+     background-color: #10b981;
+     height: 100%;
+     width: 0%;
+     transition: width 0.3s;
+   }
+   table {
+     width: 100%;
+     border-collapse: collapse;
+     margin-top: 15px;
+   }
+   th, td {
+     padding: 10px;
+     text-align: left;
+     border-bottom: 1px solid #e2e8f0;
+     font-size: 14px;
+   }
+   th {
+     background: #f1f5f9;
+     color: #475569;
+   }
+   .overlay {
+     display: none;
+     position: fixed;
+     top: 0; left: 0; right: 0; bottom: 0;
+     background: rgba(0,0,0,0.6);
+     justify-content: center;
+     align-items: center;
+     z-index: 100;
+   }
+   .modal {
+     background: white;
+     padding: 30px;
+     border-radius: 16px;
+     max-width: 400px;
+     width: 90%;
+     text-align: center;
+   }
+   .demo-banner {
+     background-color: #fef3c7;
+     color: #92400e;
+     padding: 8px;
+     font-size: 12px;
+     border-radius: 6px;
+     margin-bottom: 12px;
+   }
+ </style>
+</head>
+<body>
+
+ <div class="game-card">
+
+   <!-- 1. HOOFDMENU -->
+   <div id="screen-main" class="screen active">
+     <h1>Wiskunde Challenge 📐</h1>
+     <p>Negatieve getallen & Volgorde van bewerkingen</p>
+
+     <div class="btn-group">
+       <button onclick="showScreen('screen-kahoot-choice')">🎮 Klas Challenge (Kahoot-stijl)</button>
+       <button onclick="showScreen('screen-practice-setup')">✏️ Oefenmodus (Individueel)</button>
+       <button class="secondary" onclick="openLeaderboard()">🏆 All-Time Leaderboard</button>
+     </div>
+   </div>
+
+   <!-- 2A. KAHOOT ROL KEUZE -->
+   <div id="screen-kahoot-choice" class="screen">
+     <h1>Klas Challenge 🎮</h1>
+     <p>Kies je rol in de game:</p>
+
+     <div class="btn-group">
+       <button onclick="setupHostLobby()">👑 Host Game (Docent)</button>
+       <button onclick="showScreen('screen-join-lobby')">🙋 Join Game (Leerling)</button>
+       <button class="secondary" onclick="showScreen('screen-main')">⬅️ Terug</button>
+     </div>
+   </div>
+
+   <!-- 2B. HOST LOBBY (DOCENT) -->
+   <div id="screen-host-lobby" class="screen">
+     <h1>Game Lobby 👑</h1>
+     <p>Laat leerlingen verbinden met deze code:</p>
+   
+     <div class="pin-display" id="hostPinDisplay">------</div>
+   
+     <h3>Aangemelde Leerlingen (<span id="playerCount">0</span>):</h3>
+     <div class="player-list" id="hostPlayerList">
+       <em>Wachten op leerlingen...</em>
+     </div>
+
+     <div class="btn-group">
+       <button onclick="startHostGame()">🚀 Start Wiskundespel</button>
+       <button class="secondary" onclick="exitLobby()">⬅️ Annuleren</button>
+     </div>
+   </div>
+
+   <!-- 2C. HOST DASHBOARD (DOCENT LIVE SCORES & BEDIENING) -->
+   <div id="screen-host-dashboard" class="screen">
+     <h1>Live Game Control 👑</h1>
+     <p>Game Code: <strong id="dashPinDisplay" style="color:#2563eb;">------</strong></p>
+
+     <div id="hostLiveArea">
+       <div class="stats">
+         <div>⏱️ Tijd: <span id="hostTimer">01:00</span></div>
+         <div>👥 Spelers: <span id="hostPlayerCount">0</span></div>
+       </div>
+
+       <h3>Live Scorebord</h3>
+       <table style="width:100%; margin-bottom:15px;">
+         <thead>
+           <tr>
+             <th>#</th>
+             <th>Naam</th>
+             <th>Score</th>
+           </tr>
+         </thead>
+         <tbody id="hostScoreTableBody">
+           <tr><td colspan="3">Wachten op scores...</td></tr>
+         </tbody>
+       </table>
+
+       <div class="btn-group">
+         <button class="danger" onclick="stopHostGame()">🛑 Stop Game Nu</button>
+       </div>
+     </div>
+
+     <!-- Top 3 Weergave aan einde met Herstart Knop -->
+     <div id="hostTop3Area" style="display:none;">
+       <h2 style="color:#2563eb;">🏆 Einduitslag - Top 3 🏆</h2>
+       <div id="top3Container" style="display:flex; flex-direction:column; gap:10px; margin:20px 0;"></div>
+       <div class="btn-group">
+         <button onclick="restartHostGame()">🔄 Opnieuw Spelen (Zelfde Leerlingen)</button>
+         <button class="secondary" onclick="showScreen('screen-main')">🏠 Terug naar Hoofdmenu</button>
+       </div>
+     </div>
+   </div>
+
+   <!-- 2D. JOIN LOBBY (LEERLING) -->
+   <div id="screen-join-lobby" class="screen">
+     <h1>Deelnemen 🙋</h1>
+     <p>Vul de code van de docent in:</p>
+
+     <input type="text" id="joinPinInput" placeholder="6-cijferige Code..." maxlength="6">
+     <input type="text" id="joinNameInput" placeholder="Jouw Naam...">
+
+     <div id="joinStatus" style="color: #dc2626; font-size: 14px; margin-bottom: 10px;"></div>
+
+     <div class="btn-group">
+       <button id="joinBtn" onclick="submitJoinLobby()">Deelnemen</button>
+       <button class="secondary" onclick="exitLobby()">⬅️ Terug</button>
+     </div>
+
+     <div id="waitingForHost" style="display:none; margin-top:20px;">
+       <p style="font-weight:bold; color:#2563eb;">Je zit in de lobby! 🎉</p>
+       <p>Wachten tot de docent de game start...</p>
+     </div>
+   </div>
+
+   <!-- 3. OEFEN SETUP -->
+   <div id="screen-practice-setup" class="screen">
+     <h1>Oefenmodus ✏️</h1>
+     <p>Vul je gegevens in om je resultaat op te slaan:</p>
+
+     <input type="text" id="practiceNameInput" placeholder="Jouw Naam...">
+   
+     <select id="practiceClassSelect">
+       <option value="">-- Kies je Klas & Docent --</option>
+       <option value="1A">Klas 1A - Dhr. De Bruin</option>
+       <option value="1B">Klas 1B - Mw. Jansen</option>
+       <option value="1C">Klas 1C - Dhr. Bakker</option>
+       <option value="2A">Klas 2A - Dhr. De Bruin</option>
+       <option value="2B">Klas 2B - Mw. Jansen</option>
+     </select>
+
+     <div class="btn-group">
+       <button onclick="startPracticeGame()">Start Oefening</button>
+       <button class="secondary" onclick="showScreen('screen-main')">⬅️ Terug</button>
+     </div>
+   </div>
+
+   <!-- 4. LEADERBOARD -->
+   <div id="screen-leaderboard" class="screen">
+     <h1>All-Time Leaderboard 🏆</h1>
+   
+     <select id="leaderboardClassFilter" onchange="loadLeaderboardData()">
+       <option value="1A">Klas 1A - Dhr. De Bruin</option>
+       <option value="1B">Klas 1B - Mw. Jansen</option>
+       <option value="1C">Klas 1C - Dhr. Bakker</option>
+       <option value="2A">Klas 2A - Dhr. De Bruin</option>
+       <option value="2B">Klas 2B - Mw. Jansen</option>
+     </select>
+
+     <table id="leaderboardTable">
+       <thead>
+         <tr>
+           <th>#</th>
+           <th>Naam</th>
+           <th>Score</th>
+           <th>Datum</th>
+         </tr>
+       </thead>
+       <tbody id="leaderboardBody">
+         <tr><td colspan="4">Laden...</td></tr>
+       </tbody>
+     </table>
+
+     <div class="btn-group">
+       <button class="secondary" onclick="showScreen('screen-main')">⬅️ Terug naar Menu</button>
+     </div>
+   </div>
+
+   <!-- 5. HET SPEL (GAME LEERLING) -->
+   <div id="screen-game" class="screen">
+     <div class="header">
+       <span class="badge" id="levelBadge">Niveau 1</span>
+       <span id="playerInfoTag" style="font-size: 14px; color: #64748b;">Speler</span>
+     </div>
+
+     <div class="stats">
+       <div>⏱️ <span id="timer">01:00</span></div>
+       <div id="livesStat">❤️ <span id="lives">3</span></div>
+       <div>⭐ <span id="score">0</span> pt</div>
+     </div>
+
+     <div class="question-box">
+       <div class="level-desc" id="levelDesc">Optellen & Aftrekken met negatieve getallen</div>
+       <div class="question-text" id="questionDisplay">Laden...</div>
+     </div>
+
+     <form id="answerForm" style="display:flex; gap:10px; margin-bottom:16px;" onsubmit="event.preventDefault(); checkAnswer();">
+       <input type="number" id="answerInput" placeholder="Antwoord..." required step="any" autocomplete="off">
+       <button type="submit" style="width: auto;">OK</button>
+     </form>
+
+     <div id="feedback" class="feedback"></div>
+
+     <div class="progress-bar-container">
+       <div id="progressBar" class="progress-bar"></div>
+     </div>
+   </div>
+
+ </div>
+
+ <!-- END GAME MODAL -->
+ <div class="overlay" id="endModal">
+   <div class="modal">
+     <h2 id="modalTitle">Goed gedaan! 🎉</h2>
+     <p id="modalBody">Je hebt de minuut volgehouden.</p>
+     <p><strong>Eindscore: <span id="finalScore">0</span> punten</strong></p>
+     <button id="modalActionBtn" onclick="finishGame()">Terug naar Menu</button>
+   </div>
+ </div>
+
+ <script>
+   // Mock Google Apps Script Runner if not present in environment
+   if (typeof google === 'undefined') {
+     window.google = {
+       script: {
+         run: {
+           _successHandler: null,
+           _failureHandler: null,
+           withSuccessHandler(cb) {
+             this._successHandler = cb;
+             return this;
+           },
+           withFailureHandler(cb) {
+             this._failureHandler = cb;
+             return this;
+           },
+           createLobby() {
+             const pin = Math.floor(100000 + Math.random() * 900000).toString();
+             const lobbyData = { pin, status: 'waiting', players: [], createdAt: Date.now() };
+             localStorage.setItem('LOBBY_' + pin, JSON.stringify(lobbyData));
+             if (this._successHandler) setTimeout(() => this._successHandler({ success: true, pin }), 100);
+           },
+           joinLobby(pin, playerName) {
+             const raw = localStorage.getItem('LOBBY_' + pin);
+             if (!raw) {
+               if (this._successHandler) setTimeout(() => this._successHandler({ success: false, message: 'Ongeldige gamecode! Probeer opnieuw.' }), 100);
+               return;
+             }
+             let lobby = JSON.parse(raw);
+             if (lobby.status !== 'waiting') {
+               if (this._successHandler) setTimeout(() => this._successHandler({ success: false, message: 'De game is al gestart of afgelopen!' }), 100);
+               return;
+             }
+             if (!lobby.players.find(p => (typeof p === 'object' ? p.name : p) === playerName)) {
+               lobby.players.push({ name: playerName, score: 0 });
+               localStorage.setItem('LOBBY_' + pin, JSON.stringify(lobby));
+             }
+             if (this._successHandler) setTimeout(() => this._successHandler({ success: true, pin }), 100);
+           },
+           getLobbyStatus(pin) {
+             const raw = localStorage.getItem('LOBBY_' + pin);
+             const lobby = raw ? JSON.parse(raw) : { exists: false };
+             if (this._successHandler) setTimeout(() => this._successHandler(lobby), 50);
+           },
+           startLobbyGame(pin) {
+             const raw = localStorage.getItem('LOBBY_' + pin);
+             if (raw) {
+               let lobby = JSON.parse(raw);
+               lobby.status = 'started';
+               localStorage.setItem('LOBBY_' + pin, JSON.stringify(lobby));
+             }
+             if (this._successHandler) setTimeout(() => this._successHandler({ success: true }), 100);
+           },
+           restartLobbyGame(pin) {
+             const raw = localStorage.getItem('LOBBY_' + pin);
+             if (raw) {
+               let lobby = JSON.parse(raw);
+               lobby.status = 'started';
+               lobby.players = lobby.players.map(p => ({ name: typeof p === 'object' ? p.name : p, score: 0 }));
+               localStorage.setItem('LOBBY_' + pin, JSON.stringify(lobby));
+             }
+             if (this._successHandler) setTimeout(() => this._successHandler({ success: true }), 100);
+           },
+           updatePlayerScore(pin, playerName, score) {
+             const raw = localStorage.getItem('LOBBY_' + pin);
+             if (raw) {
+               let lobby = JSON.parse(raw);
+               let player = lobby.players.find(p => (typeof p === 'object' ? p.name : p) === playerName);
+               if (player) {
+                 player.score = parseInt(score) || 0;
+                 localStorage.setItem('LOBBY_' + pin, JSON.stringify(lobby));
+               }
+             }
+             if (this._successHandler) setTimeout(() => this._successHandler({ success: true }), 50);
+           },
+           stopLobbyGame(pin) {
+             const raw = localStorage.getItem('LOBBY_' + pin);
+             if (raw) {
+               let lobby = JSON.parse(raw);
+               lobby.status = 'finished';
+               localStorage.setItem('LOBBY_' + pin, JSON.stringify(lobby));
+             }
+             if (this._successHandler) setTimeout(() => this._successHandler({ success: true }), 100);
+           },
+           savePracticeScore(name, klas, score) {
+             const key = 'LEADERBOARD_' + klas;
+             const raw = localStorage.getItem(key);
+             let leaderboard = raw ? JSON.parse(raw) : [];
+             leaderboard.push({ name, klas, score: parseInt(score) || 0, date: new Date().toLocaleDateString('nl-NL') });
+             leaderboard.sort((a, b) => b.score - a.score);
+             leaderboard = leaderboard.slice(0, 15);
+             localStorage.setItem(key, JSON.stringify(leaderboard));
+             if (this._successHandler) setTimeout(() => this._successHandler(leaderboard), 100);
+           },
+           getLeaderboard(klas) {
+             const key = 'LEADERBOARD_' + klas;
+             const raw = localStorage.getItem(key);
+             const leaderboard = raw ? JSON.parse(raw) : [];
+             if (this._successHandler) setTimeout(() => this._successHandler(leaderboard), 100);
+           }
+         }
+       }
+     };
+   }
+
+   // Global States
+   let currentMode = 'practice'; // 'practice' of 'kahoot'
+   let activePin = null;
+   let pollInterval = null;
+   let hostTimerInterval = null;
+   let hostTimeLeft = 60;
+   let playerObj = { name: '', klas: '' };
+   let hasSeenFinished = false;
+
+   // Game Variables
+   let score = 0;
+   let lives = 3;
+   let level = 1;
+   let levelProgress = 0;
+   const requiredProgressPerLevel = 5;
+   let timeLeft = 60;
+   let timerInterval = null;
+   let currentProblem = {};
+
+   function showScreen(screenId) {
+     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+     document.getElementById(screenId).classList.add('active');
+   }
+
+   // === KAHOOT HOST LOGIC ===
+   function setupHostLobby() {
+     showScreen('screen-host-lobby');
+     if (typeof google !== 'undefined' && google.script) {
+       google.script.run.withSuccessHandler(res => {
+         if (res && res.success) {
+           activePin = res.pin;
+           document.getElementById('hostPinDisplay').textContent = activePin;
+           startPollingLobbyHost();
+         }
+       }).createLobby();
+     } else {
+       activePin = "123456";
+       document.getElementById('hostPinDisplay').textContent = activePin;
+     }
+   }
+
+   function startPollingLobbyHost() {
+     if (pollInterval) clearInterval(pollInterval);
+     pollInterval = setInterval(() => {
+       if (!activePin) return;
+       google.script.run.withSuccessHandler(data => {
+         if (data && data.players) {
+           document.getElementById('playerCount').textContent = data.players.length;
+           const container = document.getElementById('hostPlayerList');
+           if (data.players.length === 0) {
+             container.innerHTML = '<em>Wachten op leerlingen...</em>';
+           } else {
+             container.innerHTML = data.players.map(p => `<span class="player-tag">${typeof p === 'object' ? p.name : p}</span>`).join('');
+           }
+         }
+       }).getLobbyStatus(activePin);
+     }, 1000);
+   }
+
+   function startHostGame() {
+     if (!activePin) return;
+     if (typeof google !== 'undefined' && google.script) {
+       google.script.run.withSuccessHandler(res => {
+         if (pollInterval) clearInterval(pollInterval);
+         showScreen('screen-host-dashboard');
+         document.getElementById('dashPinDisplay').textContent = activePin;
+         document.getElementById('hostLiveArea').style.display = 'block';
+         document.getElementById('hostTop3Area').style.display = 'none';
+
+         hostTimeLeft = 60;
+         startHostTimer();
+         startPollingHostDashboard();
+       }).startLobbyGame(activePin);
+     } else {
+       showScreen('screen-host-dashboard');
+       document.getElementById('dashPinDisplay').textContent = activePin;
+     }
+   }
+
+   function restartHostGame() {
+     if (!activePin) return;
+     if (typeof google !== 'undefined' && google.script) {
+       google.script.run.withSuccessHandler(res => {
+         hostTimeLeft = 60;
+         showScreen('screen-host-dashboard');
+         document.getElementById('hostLiveArea').style.display = 'block';
+         document.getElementById('hostTop3Area').style.display = 'none';
+         startHostTimer();
+         startPollingHostDashboard();
+       }).restartLobbyGame(activePin);
+     } else {
+       // Demo modus
+       hostTimeLeft = 60;
+       showScreen('screen-host-dashboard');
+       document.getElementById('hostLiveArea').style.display = 'block';
+       document.getElementById('hostTop3Area').style.display = 'none';
+       startHostTimer();
+     }
+   }
+
+   function startHostTimer() {
+     if (hostTimerInterval) clearInterval(hostTimerInterval);
+     hostTimerInterval = setInterval(() => {
+       hostTimeLeft--;
+       let mins = Math.floor(hostTimeLeft / 60);
+       let secs = hostTimeLeft % 60;
+       document.getElementById('hostTimer').textContent =
+         `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+       if (hostTimeLeft <= 0) {
+         clearInterval(hostTimerInterval);
+         stopHostGame();
+       }
+     }, 1000);
+   }
+
+   function startPollingHostDashboard() {
+     if (pollInterval) clearInterval(pollInterval);
+     pollInterval = setInterval(() => {
+       if (!activePin) return;
+       google.script.run.withSuccessHandler(data => {
+         if (!data || !data.players) return;
+        
+         document.getElementById('hostPlayerCount').textContent = data.players.length;
+        
+         let sortedPlayers = [...data.players].sort((a, b) => b.score - a.score);
+         const tbody = document.getElementById('hostScoreTableBody');
+
+         if (sortedPlayers.length === 0) {
+           tbody.innerHTML = '<tr><td colspan="3">Geen spelers...</td></tr>';
+         } else {
+           tbody.innerHTML = sortedPlayers.map((p, index) => `
+             <tr>
+               <td><strong>${index + 1}</strong></td>
+               <td>${p.name}</td>
+               <td><strong>${p.score} pt</strong></td>
+             </tr>
+           `).join('');
+         }
+
+         if (data.status === 'finished') {
+           clearInterval(pollInterval);
+           clearInterval(hostTimerInterval);
+           renderTop3(sortedPlayers);
+         }
+       }).getLobbyStatus(activePin);
+     }, 1000);
+   }
+
+   function stopHostGame() {
+     if (hostTimerInterval) clearInterval(hostTimerInterval);
+     if (pollInterval) clearInterval(pollInterval);
+
+     if (typeof google !== 'undefined' && google.script && activePin) {
+       google.script.run.withSuccessHandler(() => {
+         fetchFinalScoresAndShowTop3();
+       }).stopLobbyGame(activePin);
+     } else {
+       fetchFinalScoresAndShowTop3();
+     }
+   }
+
+   function fetchFinalScoresAndShowTop3() {
+     if (typeof google !== 'undefined' && google.script && activePin) {
+       google.script.run.withSuccessHandler(data => {
+         let players = data.players || [];
+         players.sort((a, b) => b.score - a.score);
+         renderTop3(players);
+       }).getLobbyStatus(activePin);
+     } else {
+       renderTop3([{name: "Demo Speler 1", score: 80}, {name: "Demo Speler 2", score: 50}, {name: "Demo Speler 3", score: 20}]);
+     }
+   }
+
+   function renderTop3(players) {
+     document.getElementById('hostLiveArea').style.display = 'none';
+     document.getElementById('hostTop3Area').style.display = 'block';
+
+     const top3 = players.slice(0, 3);
+     const container = document.getElementById('top3Container');
+     const bgColors = ['#fef3c7', '#f1f5f9', '#ffedd5'];
+     const borderColors = ['#f59e0b', '#94a3b8', '#f97316'];
+
+     if (top3.length === 0) {
+       container.innerHTML = '<p>Er zijn geen resultaten bekend.</p>';
+       return;
+     }
+
+     container.innerHTML = top3.map((p, i) => `
+       <div style="background: ${bgColors[i] || '#f8fafc'}; border: 2px solid ${borderColors[i] || '#cbd5e1'}; border-radius: 12px; padding: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+         <span style="font-size: 16px;"><strong>${p.name}</strong></span>
+         <span style="font-size: 18px; color: #2563eb;">${p.score} pt</span>
+       </div>
+     `).join('');
+   }
+
+   // === KAHOOT JOIN LOGIC (LEERLING) ===
+   function submitJoinLobby() {
+     const pin = document.getElementById('joinPinInput').value.trim();
+     const name = document.getElementById('joinNameInput').value.trim();
+     const statusEl = document.getElementById('joinStatus');
+
+     if (!pin || !name) {
+       statusEl.textContent = "Vul zowel de code als je naam in.";
+       return;
+     }
+
+     statusEl.textContent = "Verbinden...";
+     if (typeof google !== 'undefined' && google.script) {
+       google.script.run.withSuccessHandler(res => {
+         if (res && res.success) {
+           activePin = pin;
+           playerObj.name = name;
+           currentMode = 'kahoot';
+           document.getElementById('joinBtn').style.display = 'none';
+           document.getElementById('waitingForHost').style.display = 'block';
+           statusEl.textContent = "";
+           startPollingLobbyJoin();
+         } else {
+           statusEl.textContent = res ? res.message : "Er is een fout opgetreden.";
+         }
+       }).joinLobby(pin, name);
+     } else {
+       playerObj.name = name;
+       currentMode = 'kahoot';
+       initGame();
+     }
+   }
+
+   function startPollingLobbyJoin() {
+     if (pollInterval) clearInterval(pollInterval);
+     pollInterval = setInterval(() => {
+       if (!activePin) return;
+       google.script.run.withSuccessHandler(data => {
+         if (data && data.status === 'started') {
+           clearInterval(pollInterval);
+           initGame();
+         }
+       }).getLobbyStatus(activePin);
+     }, 1000);
+   }
+
+   function startPollingForRestart() {
+     hasSeenFinished = false;
+     if (pollInterval) clearInterval(pollInterval);
+     pollInterval = setInterval(() => {
+       if (!activePin || currentMode !== 'kahoot') return;
+       google.script.run.withSuccessHandler(data => {
+         if (!data) return;
+         if (data.status === 'finished') {
+           hasSeenFinished = true;
+         } else if (data.status === 'started' && hasSeenFinished) {
+           hasSeenFinished = false;
+           clearInterval(pollInterval);
+           initGame();
+         }
+       }).getLobbyStatus(activePin);
+     }, 1000);
+   }
+
+   function exitLobby() {
+     if (pollInterval) clearInterval(pollInterval);
+     activePin = null;
+     document.getElementById('waitingForHost').style.display = 'none';
+     document.getElementById('joinBtn').style.display = 'block';
+     showScreen('screen-main');
+   }
+
+   // === PRACTICE LOGIC ===
+   function startPracticeGame() {
+     const name = document.getElementById('practiceNameInput').value.trim();
+     const klas = document.getElementById('practiceClassSelect').value;
+
+     if (!name || !klas) {
+       alert("Vul je naam in en selecteer je klas.");
+       return;
+     }
+
+     playerObj = { name, klas };
+     currentMode = 'practice';
+     initGame();
+   }
+
+   function openLeaderboard() {
+     if (playerObj.klas) {
+       document.getElementById('leaderboardClassFilter').value = playerObj.klas;
+     }
+     showScreen('screen-leaderboard');
+     loadLeaderboardData();
+   }
+
+   function loadLeaderboardData() {
+     const klas = document.getElementById('leaderboardClassFilter').value;
+     const tbody = document.getElementById('leaderboardBody');
+     tbody.innerHTML = '<tr><td colspan="4">Laden...</td></tr>';
+
+     if (typeof google !== 'undefined' && google.script) {
+       google.script.run.withSuccessHandler(data => {
+         if (!data || data.length === 0) {
+           tbody.innerHTML = '<tr><td colspan="4">Nog geen scores in deze klas.</td></tr>';
+           return;
+         }
+         tbody.innerHTML = data.map((item, index) => `
+           <tr>
+             <td><strong>${index + 1}</strong></td>
+             <td>${item.name}</td>
+             <td><strong>${item.score}</strong> pt</td>
+             <td>${item.date}</td>
+           </tr>
+         `).join('');
+       }).getLeaderboard(klas);
+     } else {
+       tbody.innerHTML = '<tr><td>1</td><td>Test Speler</td><td>120 pt</td><td>Vandaag</td></tr>';
+     }
+   }
+
+   // === GAME LOGIC ===
+   function initGame() {
+     score = 0;
+     lives = 3;
+     level = 1;
+     levelProgress = 0;
+     timeLeft = 60;
+
+     document.getElementById('playerInfoTag').textContent = `${playerObj.name} ${playerObj.klas ? '('+playerObj.klas+')' : ''}`;
+     document.getElementById('endModal').style.display = 'none';
+     document.getElementById('feedback').style.display = 'none';
+
+     const livesStat = document.getElementById('livesStat');
+     if (livesStat) {
+       livesStat.style.display = (currentMode === 'kahoot') ? 'none' : 'block';
+     }
+
+     showScreen('screen-game');
+     updateLevelUI();
+     updateUI();
+     generateQuestion();
+     if (timerInterval) clearInterval(timerInterval);
+     startTimer();
+
+     if (currentMode === 'kahoot') {
+       if (pollInterval) clearInterval(pollInterval);
+       pollInterval = setInterval(() => {
+         if (!activePin) return;
+         google.script.run.withSuccessHandler(data => {
+           if (data && data.status === 'finished') {
+             clearInterval(pollInterval);
+             endGame("Game Beëindigd! 🏁", "De docent heeft de game gestopt.");
+           }
+         }).getLobbyStatus(activePin);
+       }, 1000);
+     }
+   }
+
+   function randInt(min, max) {
+     return Math.floor(Math.random() * (max - min + 1)) + min;
+   }
+
+   function randNonZero(min, max) {
+     let val = 0;
+     while (val === 0) val = randInt(min, max);
+     return val;
+   }
+
+   function generateQuestion() {
+     let exprStr = "";
+     let answer = 0;
+     let hint = "";
+
+     if (level === 1) {
+       let type = randInt(0, 2);
+       let a = randInt(-10, 10);
+       let b = randInt(-10, 10);
+
+       if (type === 0) {
+         answer = a + b;
+         exprStr = `${a} ${b >= 0 ? '+ ' + b : '+ (' + b + ')'}`;
+         hint = `Plus en min achter elkaar wordt min (+ - = -).`;
+       } else if (type === 1) {
+         answer = a - b;
+         exprStr = `${a} ${b >= 0 ? '- ' + b : '- (' + b + ')'}`;
+         hint = `Twee minnen achter elkaar worden plus (- - = +).`;
+       } else {
+         a = randInt(-12, -1);
+         b = randInt(1, 15);
+         answer = a + b;
+         exprStr = `${a} + ${b}`;
+         hint = `Begin op de getallenlijn bij ${a} en ga ${b} stapjes naar rechts.`;
+       }
+     } else if (level === 2) {
+       let type = randInt(0, 2);
+       if (type === 0) {
+         let a = randNonZero(-7, 7);
+         let b = randNonZero(-7, 7);
+         let c = randInt(-10, 10);
+         answer = (a * b) + c;
+         let cStr = c === 0 ? '' : (c > 0 ? `+ ${c}` : `- ${Math.abs(c)}`);
+         exprStr = `${a < 0 ? '('+a+')' : a} × ${b < 0 ? '('+b+')' : b} ${cStr}`.trim();
+         hint = `Eerst vermenigvuldigen (${a} × ${b} = ${a*b}), daarna optellen/aftrekken.`;
+       } else if (type === 1) {
+         let b = randNonZero(-5, 5);
+         answer = randInt(-8, 8);
+         let a = b * answer;
+         let c = randInt(-10, 10);
+         answer = answer + c;
+         let cStr = c === 0 ? '' : (c > 0 ? `+ ${c}` : `- ${Math.abs(c)}`);
+         exprStr = `${a} : ${b < 0 ? '('+b+')' : b} ${cStr}`.trim();
+         hint = `Eerst delen (${a} : ${b} = ${a/b}), daarna optellen/aftrekken.`;
+       } else {
+         let a = randInt(-10, 10);
+         let b = randNonZero(-5, 5);
+         let c = randNonZero(-5, 5);
+         answer = a + (b * c);
+         exprStr = `${a} + (${b < 0 ? '('+b+')' : b} × ${c < 0 ? '('+c+')' : c})`;
+         hint = `Vermenigvuldigen gaat voor optellen: ${b} × ${c} = ${b*c}.`;
+       }
+     } else {
+       let type = randInt(0, 1);
+       if (type === 0) {
+         let a = randNonZero(-5, 5);
+         let b = randInt(-6, 6);
+         let c = randInt(-6, 6);
+         let inside = b - c;
+         answer = a * inside;
+         exprStr = `${a} × (${b} - ${c < 0 ? '('+c+')' : c})`;
+         hint = `1) Haakjes: ${b} - (${c}) = ${inside}. 2) Vermenigvuldigen: ${a} × ${inside} = ${answer}.`;
+       } else {
+         let a = randInt(-10, 10);
+         let b = randNonZero(-4, 4);
+         let c = randInt(-5, 5);
+         let d = randInt(-5, 5);
+         let inside = c - d;
+         answer = a + (b * inside);
+         exprStr = `${a} + (${b < 0 ? '('+b+')' : b} × (${c < 0 ? '('+c+')' : c} - ${d < 0 ? '('+d+')' : d}))`;
+         hint = `1) Haakjes: ${c} - ${d} = ${inside}. 2) Keer: ${b} × ${inside}. 3) Plus.`;
+       }
+     }
+
+     currentProblem = { exprStr, answer, hint };
+     document.getElementById('questionDisplay').textContent = `${exprStr} = ?`;
+   }
+
+   function checkAnswer() {
+     const inputEl = document.getElementById('answerInput');
+     const feedbackEl = document.getElementById('feedback');
+     const userAns = parseFloat(inputEl.value);
+
+     if (isNaN(userAns)) return;
+
+     if (Math.abs(userAns - currentProblem.answer) < 0.01) {
+       score += 10;
+       levelProgress++;
+       feedbackEl.className = "feedback correct";
+       feedbackEl.innerHTML = `<strong>Goed gedaan! 🎉</strong> (+10 pt)`;
+
+       if (levelProgress >= requiredProgressPerLevel && level < 3) {
+         level++;
+         levelProgress = 0;
+         updateLevelUI();
+       }
+     } else {
+       feedbackEl.className = "feedback wrong";
+       feedbackEl.innerHTML = `<strong>Helaas, fout!</strong> Het juiste antwoord was <code>${currentProblem.answer}</code>.<br><small>💡 ${currentProblem.hint}</small>`;
+
+       if (currentMode === 'practice') {
+         lives--;
+       } else {
+         score = Math.max(0, score);
+       }
+     }
+
+     if (currentMode === 'kahoot' && activePin) {
+       if (typeof google !== 'undefined' && google.script) {
+         google.script.run.updatePlayerScore(activePin, playerObj.name, score);
+       }
+     }
+
+     updateUI();
+     inputEl.value = '';
+     inputEl.focus();
+
+     if (currentMode === 'practice' && lives <= 0) {
+       endGame("Geen levens meer! 💔", "Probeer het nog een keer.");
+     } else {
+       generateQuestion();
+     }
+   }
+
+   function updateLevelUI() {
+     document.getElementById('levelBadge').textContent = `Niveau ${level}`;
+     const descEl = document.getElementById('levelDesc');
+     if (level === 1) descEl.textContent = "Optellen & Aftrekken met negatieve getallen";
+     if (level === 2) descEl.textContent = "Vermenigvuldigen, delen & volgorde van bewerkingen";
+     if (level === 3) descEl.textContent = "Gecombineerd rekenen met haakjes";
+   }
+
+   function updateUI() {
+     document.getElementById('score').textContent = score;
+     document.getElementById('lives').textContent = lives;
+     const progressPercent = Math.min((levelProgress / requiredProgressPerLevel) * 100, 100);
+     document.getElementById('progressBar').style.width = `${progressPercent}%`;
+   }
+
+   function startTimer() {
+     timerInterval = setInterval(() => {
+       timeLeft--;
+       let mins = Math.floor(timeLeft / 60);
+       let secs = timeLeft % 60;
+       document.getElementById('timer').textContent =
+         `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+       if (timeLeft <= 0) {
+         clearInterval(timerInterval);
+         endGame("Tijd is om! ⏱️", "De minuut zit erop.");
+       }
+     }, 1000);
+   }
+
+   function endGame(title, message) {
+     if (timerInterval) clearInterval(timerInterval);
+     if (pollInterval) clearInterval(pollInterval);
+    
+     document.getElementById('modalTitle').textContent = title;
+     document.getElementById('modalBody').textContent = message;
+     document.getElementById('finalScore').textContent = score;
+     document.getElementById('endModal').style.display = 'flex';
+
+     const finishBtn = document.getElementById('modalActionBtn');
+
+     if (currentMode === 'practice' && playerObj.name && playerObj.klas) {
+       if (finishBtn) finishBtn.textContent = "Score opslaan...";
+
+       if (typeof google !== 'undefined' && google.script) {
+         google.script.run
+           .withSuccessHandler(function() {
+             if (finishBtn) finishBtn.textContent = "Bekijk Leaderboard";
+           })
+           .withFailureHandler(function(err) {
+             if (finishBtn) finishBtn.textContent = "Bekijk Leaderboard";
+             console.error("Opslaan mislukt:", err);
+           })
+           .savePracticeScore(playerObj.name, playerObj.klas, score);
+       }
+     } else if (currentMode === 'kahoot') {
+       if (finishBtn) finishBtn.textContent = "Verlaten / Hoofdmenu";
+       startPollingForRestart();
+     } else {
+       if (finishBtn) finishBtn.textContent = "Terug naar Menu";
+     }
+   }
+
+   function finishGame() {
+     document.getElementById('endModal').style.display = 'none';
+     if (currentMode === 'practice' && playerObj.klas) {
+       openLeaderboard();
+     } else {
+       showScreen('screen-main');
+     }
+   }
+ </script>
+</body>
+</html>
